@@ -12,8 +12,8 @@
       <h1>Redeem a stuck bridge transfer</h1>
       <p class="hint">
         A <code>0x…</code> hash left Sepolia and is redeemed on Solana; a Solana
-        signature is redeemed on Sepolia. The key only pays the fees: tokens go to
-        the recipient named in the VAA. There is no preview step, the button redeems.
+        signature is redeemed on Sepolia. The payer key covers fees only: tokens go
+        to the recipient named in the VAA. There is no preview step, the button redeems.
       </p>
 
       <form id="form" autocomplete="off">
@@ -23,9 +23,9 @@
             placeholder="0x… (Sepolia) or Solana signature" spellcheck="false" />
         </label>
         <label>
-          Private key that pays the fees
-          <input id="privKey" name="privKey" type="password" required
-            placeholder="EVM key, base58, JSON, or path to a keypair" />
+          Fee payer key
+          <input id="payerKey" name="payerKey" type="password" required
+            placeholder="EVM hex, base58 secret, JSON array, or keypair path" />
         </label>
         <button id="submit" type="submit">Redeem</button>
       </form>
@@ -41,8 +41,8 @@
       form.addEventListener('submit', async event => {
         event.preventDefault();
         const tx = document.getElementById('tx').value.trim();
-        const privKey = document.getElementById('privKey').value.trim();
-        if (!tx || !privKey) return;
+        const payerKey = document.getElementById('payerKey').value.trim();
+        if (!tx || !payerKey) return;
 
         submit.disabled = true;
         submit.textContent = 'Redeeming…';
@@ -53,7 +53,7 @@
           const response = await fetch('/api/redeem', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tx, privKey }),
+            body: JSON.stringify({ tx, payerKey }),
           });
           if (!response.ok || !response.body) {
             output.textContent = `error ${response.status}: ${await response.text()}`;

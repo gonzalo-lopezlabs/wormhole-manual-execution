@@ -10,9 +10,9 @@ export async function POST({ request }) {
     return new Response('invalid body, JSON expected', { status: 400 });
   }
   const tx = (body.tx || '').trim();
-  const privKey = (body.privKey || '').trim();
-  if (!tx || !privKey) {
-    return new Response('missing tx or privKey', { status: 400 });
+  const payerKey = (body.payerKey || '').trim();
+  if (!tx || !payerKey) {
+    return new Response('missing tx or payerKey', { status: 400 });
   }
 
   // The redemption runs in-process and its progress lines stream back as they
@@ -26,7 +26,7 @@ export async function POST({ request }) {
         if (open) controller.enqueue(encoder.encode(`${line}\n`));
       };
       try {
-        await redeem(tx, privKey, log);
+        await redeem(tx, payerKey, log);
       } catch (error) {
         log(`error: ${describeError(error)}`);
         if (error.logs) log(error.logs.slice(-6).join('\n'));

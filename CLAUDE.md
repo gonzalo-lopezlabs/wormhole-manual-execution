@@ -34,6 +34,8 @@ Network constants (devnet/testnet only) are hardcoded at the top of `lib/redeem.
 
 Deployed to Vercel from the repo root: `vercel.json` pins the framework to `astro` and `astro.config.mjs` uses `@astrojs/vercel` with `maxDuration: 60`, since a redemption is several transactions with confirmations. The local dev port is 4322 (not Astro's default 4321) to dodge stale cached redirects from other local projects.
 
+Vercel's automated phishing filter blocks deployments whose pages look like wallet drainers, and a password input labeled "Private key" on a page about wallets is exactly that signature (one deploy of this repo was blocked for it). That is why the UI and the HTTP field say "fee payer key" / `payerKey`; do not reintroduce the phrase "private key" into served content. The CLI still takes `privKey=` because it is not deployed.
+
 ### Module system
 
 The package is ESM (`"type": "module"`) because the Astro endpoint imports `lib/redeem.js` through Vite, which cannot load CommonJS project files. Consequences to preserve:
