@@ -7,12 +7,12 @@ export async function POST({ request }) {
   try {
     body = await request.json();
   } catch {
-    return new Response('cuerpo invalido, se espera JSON', { status: 400 });
+    return new Response('invalid body, JSON expected', { status: 400 });
   }
   const tx = (body.tx || '').trim();
   const privKey = (body.privKey || '').trim();
   if (!tx || !privKey) {
-    return new Response('faltan tx o privKey', { status: 400 });
+    return new Response('missing tx or privKey', { status: 400 });
   }
 
   // The redemption runs in-process and its progress lines stream back as they

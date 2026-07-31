@@ -1,7 +1,7 @@
 ---
 ---
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,25 +9,25 @@
   </head>
   <body>
     <main>
-      <h1>Redimir un bridge trabado</h1>
+      <h1>Redeem a stuck bridge transfer</h1>
       <p class="hint">
-        Un hash <code>0x…</code> salió de Sepolia y se redime en Solana; una firma de
-        Solana se redime en Sepolia. La clave solo paga los fees: los tokens van al
-        destinatario que dice el VAA. No hay paso previo, el botón redime.
+        A <code>0x…</code> hash left Sepolia and is redeemed on Solana; a Solana
+        signature is redeemed on Sepolia. The key only pays the fees: tokens go to
+        the recipient named in the VAA. There is no preview step, the button redeems.
       </p>
 
       <form id="form" autocomplete="off">
         <label>
-          Transacción de origen
+          Source transaction
           <input id="tx" name="tx" type="text" required
-            placeholder="0x… (Sepolia) o firma de Solana" spellcheck="false" />
+            placeholder="0x… (Sepolia) or Solana signature" spellcheck="false" />
         </label>
         <label>
-          Clave privada del que paga
+          Private key that pays the fees
           <input id="privKey" name="privKey" type="password" required
-            placeholder="clave EVM, base58, JSON o ruta a un keypair" />
+            placeholder="EVM key, base58, JSON, or path to a keypair" />
         </label>
-        <button id="submit" type="submit">Redimir</button>
+        <button id="submit" type="submit">Redeem</button>
       </form>
 
       <pre id="output" hidden></pre>
@@ -45,7 +45,7 @@
         if (!tx || !privKey) return;
 
         submit.disabled = true;
-        submit.textContent = 'Redimiendo…';
+        submit.textContent = 'Redeeming…';
         output.hidden = false;
         output.textContent = '';
 
@@ -68,10 +68,10 @@
             output.scrollTop = output.scrollHeight;
           }
         } catch (error) {
-          output.textContent += `\nerror de red: ${error.message}`;
+          output.textContent += `\nnetwork error: ${error.message}`;
         } finally {
           submit.disabled = false;
-          submit.textContent = 'Redimir';
+          submit.textContent = 'Redeem';
         }
       });
     </script>

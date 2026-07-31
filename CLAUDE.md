@@ -53,4 +53,4 @@ The package is ESM (`"type": "module"`) because the Astro endpoint imports `lib/
 
 ## Conventions
 
-User-facing console output is in Spanish; code, comments, and errors aimed at programmers are in English. Keep that split.
+Everything is in English: UI copy, console output, error messages, code, comments, and docs.

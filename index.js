@@ -20,7 +20,7 @@ const args = Object.fromEntries(
 );
 
 if (!args.tx || !args.privKey) {
-  console.error('uso: node index.js tx=<hash> privKey=<clave del que paga>');
+  console.error('usage: node index.js tx=<hash> privKey=<key that pays the fees>');
   process.exit(1);
 }
 
