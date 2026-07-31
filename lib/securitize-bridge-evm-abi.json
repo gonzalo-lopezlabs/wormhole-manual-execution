@@ -1,0 +1,1083 @@
+[
+ {
+  "inputs": [],
+  "stateMutability": "nonpayable",
+  "type": "constructor"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "target",
+    "type": "address"
+   }
+  ],
+  "name": "AddressEmptyCode",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "BridgeAddressNotConfigured",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "CannotBridgeToSameChain",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "DestinationWalletNotWhitelisted",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "implementation",
+    "type": "address"
+   }
+  ],
+  "name": "ERC1967InvalidImplementation",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "ERC1967NonPayable",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "ETHTransferError",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "EmitterAddressNotConfigured",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "EnforcedPause",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "ExpectedPause",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "FailedCall",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InsufficientETHForFees",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InsufficientTokenBalance",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InsufficientUnlockedBalance",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InvalidBridgeAmount",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InvalidInitialization",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InvalidWormholeMessage",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "InvestorNotRegistered",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "MessageAlreadyConsumed",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "NonEVMTargetChain",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "NonZeroAddress",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "NotInitializing",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "owner",
+    "type": "address"
+   }
+  ],
+  "name": "OwnableInvalidOwner",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "account",
+    "type": "address"
+   }
+  ],
+  "name": "OwnableUnauthorizedAccount",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "ReentrancyGuardReentrantCall",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "RefundFailed",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "UUPSUnauthorizedCallContext",
+  "type": "error"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "bytes32",
+    "name": "slot",
+    "type": "bytes32"
+   }
+  ],
+  "name": "UUPSUnsupportedProxiableUUID",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "WalletBelongsToADifferentInvestor",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "WrongBridgeInitiator",
+  "type": "error"
+ },
+ {
+  "inputs": [],
+  "name": "WrongDestinationChain",
+  "type": "error"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint16",
+    "name": "chainId",
+    "type": "uint16"
+   },
+   {
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "bridgeAddress",
+    "type": "bytes32"
+   }
+  ],
+  "name": "BridgeAddressAdded",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint16",
+    "name": "chainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "BridgeAddressRemoved",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint8",
+    "name": "oldConsistencyLevel",
+    "type": "uint8"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint8",
+    "name": "newConsistencyLevel",
+    "type": "uint8"
+   }
+  ],
+  "name": "ConsistencyLevelUpdate",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint16",
+    "name": "sourceChainId",
+    "type": "uint16"
+   },
+   {
+    "indexed": false,
+    "internalType": "address",
+    "name": "dsToken",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "sourceWallet",
+    "type": "bytes32"
+   },
+   {
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "destinationAddress",
+    "type": "bytes32"
+   },
+   {
+    "indexed": false,
+    "internalType": "string",
+    "name": "investorId",
+    "type": "string"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "value",
+    "type": "uint256"
+   }
+  ],
+  "name": "DSTokenBridgeReceive",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint16",
+    "name": "targetChainId",
+    "type": "uint16"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "dsToken",
+    "type": "address"
+   },
+   {
+    "indexed": true,
+    "internalType": "bytes32",
+    "name": "sourceWallet",
+    "type": "bytes32"
+   },
+   {
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "destinationAddress",
+    "type": "bytes32"
+   },
+   {
+    "indexed": false,
+    "internalType": "string",
+    "name": "investorId",
+    "type": "string"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "value",
+    "type": "uint256"
+   }
+  ],
+  "name": "DSTokenBridgeSend",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "address payable",
+    "name": "recipient",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "amount",
+    "type": "uint256"
+   }
+  ],
+  "name": "ETHWithdrawn",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint16",
+    "name": "chainId",
+    "type": "uint16"
+   },
+   {
+    "indexed": false,
+    "internalType": "bool",
+    "name": "isEVM",
+    "type": "bool"
+   }
+  ],
+  "name": "EVMChainSet",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint16",
+    "name": "chainId",
+    "type": "uint16"
+   },
+   {
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "emitterAddress",
+    "type": "bytes32"
+   }
+  ],
+  "name": "EmitterAddressAdded",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "uint16",
+    "name": "chainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "EmitterAddressRemoved",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "oldGasLimit",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "newGasLimit",
+    "type": "uint256"
+   }
+  ],
+  "name": "GasLimitUpdate",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint64",
+    "name": "version",
+    "type": "uint64"
+   }
+  ],
+  "name": "Initialized",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "oldMsgValue",
+    "type": "uint256"
+   },
+   {
+    "indexed": false,
+    "internalType": "uint256",
+    "name": "newMsgValue",
+    "type": "uint256"
+   }
+  ],
+  "name": "MsgValueUpdate",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "previousOwner",
+    "type": "address"
+   },
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "newOwner",
+    "type": "address"
+   }
+  ],
+  "name": "OwnershipTransferred",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "address",
+    "name": "account",
+    "type": "address"
+   }
+  ],
+  "name": "Paused",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "address",
+    "name": "oldQuoterAddr",
+    "type": "address"
+   },
+   {
+    "indexed": false,
+    "internalType": "address",
+    "name": "newQuoterAddr",
+    "type": "address"
+   }
+  ],
+  "name": "QuoterAddrUpdate",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": false,
+    "internalType": "address",
+    "name": "account",
+    "type": "address"
+   }
+  ],
+  "name": "Unpaused",
+  "type": "event"
+ },
+ {
+  "anonymous": false,
+  "inputs": [
+   {
+    "indexed": true,
+    "internalType": "address",
+    "name": "implementation",
+    "type": "address"
+   }
+  ],
+  "name": "Upgraded",
+  "type": "event"
+ },
+ {
+  "inputs": [],
+  "name": "UPGRADE_INTERFACE_VERSION",
+  "outputs": [
+   {
+    "internalType": "string",
+    "name": "",
+    "type": "string"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "wmChainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "bridgeAddresses",
+  "outputs": [
+   {
+    "internalType": "bytes32",
+    "name": "bridge",
+    "type": "bytes32"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_targetChain",
+    "type": "uint16"
+   },
+   {
+    "internalType": "uint256",
+    "name": "_value",
+    "type": "uint256"
+   }
+  ],
+  "name": "bridgeDSTokens",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_targetChain",
+    "type": "uint16"
+   },
+   {
+    "internalType": "uint256",
+    "name": "_value",
+    "type": "uint256"
+   },
+   {
+    "internalType": "bytes32",
+    "name": "_destinationAddress",
+    "type": "bytes32"
+   }
+  ],
+  "name": "bridgeDSTokensToAddress",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "consistencyLevel",
+  "outputs": [
+   {
+    "internalType": "uint8",
+    "name": "",
+    "type": "uint8"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "dsServiceConsumer",
+  "outputs": [
+   {
+    "internalType": "contract IDSServiceConsumer",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "dsToken",
+  "outputs": [
+   {
+    "internalType": "contract IDSToken",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "wmChainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "emitterAddresses",
+  "outputs": [
+   {
+    "internalType": "bytes32",
+    "name": "emitter",
+    "type": "bytes32"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "wmChainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "evmChains",
+  "outputs": [
+   {
+    "internalType": "bool",
+    "name": "isEVM",
+    "type": "bool"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "bytes",
+    "name": "_encodedVM",
+    "type": "bytes"
+   }
+  ],
+  "name": "executeVAAv1",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "executorQuoterRouter",
+  "outputs": [
+   {
+    "internalType": "contract IExecutorQuoterRouter",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "gasLimit",
+  "outputs": [
+   {
+    "internalType": "uint128",
+    "name": "",
+    "type": "uint128"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getImplementationAddress",
+  "outputs": [
+   {
+    "internalType": "address",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getInitializedVersion",
+  "outputs": [
+   {
+    "internalType": "uint64",
+    "name": "",
+    "type": "uint64"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "_wormholeCore",
+    "type": "address"
+   },
+   {
+    "internalType": "address",
+    "name": "_executorQuoterRouter",
+    "type": "address"
+   },
+   {
+    "internalType": "address",
+    "name": "_quoterAddr",
+    "type": "address"
+   },
+   {
+    "internalType": "address",
+    "name": "_dsToken",
+    "type": "address"
+   }
+  ],
+  "name": "initialize",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "bytes32",
+    "name": "vmHash",
+    "type": "bytes32"
+   }
+  ],
+  "name": "isVaaConsumed",
+  "outputs": [
+   {
+    "internalType": "bool",
+    "name": "isConsumed",
+    "type": "bool"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "msgValue",
+  "outputs": [
+   {
+    "internalType": "uint128",
+    "name": "",
+    "type": "uint128"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "owner",
+  "outputs": [
+   {
+    "internalType": "address",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "pause",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "paused",
+  "outputs": [
+   {
+    "internalType": "bool",
+    "name": "",
+    "type": "bool"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "proxiableUUID",
+  "outputs": [
+   {
+    "internalType": "bytes32",
+    "name": "",
+    "type": "bytes32"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_targetChain",
+    "type": "uint16"
+   }
+  ],
+  "name": "quoteBridge",
+  "outputs": [
+   {
+    "internalType": "uint256",
+    "name": "cost",
+    "type": "uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "quoterAddr",
+  "outputs": [
+   {
+    "internalType": "address",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_chainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "removeBridgeAddress",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_chainId",
+    "type": "uint16"
+   }
+  ],
+  "name": "removeEmitterAddress",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "renounceOwnership",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_chainId",
+    "type": "uint16"
+   },
+   {
+    "internalType": "bytes32",
+    "name": "_bridgeAddress",
+    "type": "bytes32"
+   }
+  ],
+  "name": "setBridgeAddress",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_chainId",
+    "type": "uint16"
+   },
+   {
+    "internalType": "bool",
+    "name": "_isEVM",
+    "type": "bool"
+   }
+  ],
+  "name": "setEVMChain",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint16",
+    "name": "_chainId",
+    "type": "uint16"
+   },
+   {
+    "internalType": "bytes32",
+    "name": "_emitterAddress",
+    "type": "bytes32"
+   }
+  ],
+  "name": "setEmitterAddress",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "_quoterAddr",
+    "type": "address"
+   }
+  ],
+  "name": "setQuoterAddr",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "newOwner",
+    "type": "address"
+   }
+  ],
+  "name": "transferOwnership",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "unpause",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint8",
+    "name": "_consistencyLevel",
+    "type": "uint8"
+   }
+  ],
+  "name": "updateConsistencyLevel",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint128",
+    "name": "_gasLimit",
+    "type": "uint128"
+   }
+  ],
+  "name": "updateGasLimit",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "uint128",
+    "name": "_msgValue",
+    "type": "uint128"
+   }
+  ],
+  "name": "updateMsgValue",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address",
+    "name": "newImplementation",
+    "type": "address"
+   },
+   {
+    "internalType": "bytes",
+    "name": "data",
+    "type": "bytes"
+   }
+  ],
+  "name": "upgradeToAndCall",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "internalType": "address payable",
+    "name": "_to",
+    "type": "address"
+   }
+  ],
+  "name": "withdrawETH",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "wormholeCore",
+  "outputs": [
+   {
+    "internalType": "contract IWormhole",
+    "name": "",
+    "type": "address"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ }
+]

@@ -1,0 +1,146 @@
+---
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>wormhole manual execution</title>
+  </head>
+  <body>
+    <main>
+      <h1>Redimir un bridge trabado</h1>
+      <p class="hint">
+        Un hash <code>0x…</code> salió de Sepolia y se redime en Solana; una firma de
+        Solana se redime en Sepolia. La clave solo paga los fees: los tokens van al
+        destinatario que dice el VAA. No hay paso previo, el botón redime.
+      </p>
+
+      <form id="form" autocomplete="off">
+        <label>
+          Transacción de origen
+          <input id="tx" name="tx" type="text" required
+            placeholder="0x… (Sepolia) o firma de Solana" spellcheck="false" />
+        </label>
+        <label>
+          Clave privada del que paga
+          <input id="privKey" name="privKey" type="password" required
+            placeholder="clave EVM, base58, JSON o ruta a un keypair" />
+        </label>
+        <button id="submit" type="submit">Redimir</button>
+      </form>
+
+      <pre id="output" hidden></pre>
+    </main>
+
+    <script>
+      const form = document.getElementById('form');
+      const output = document.getElementById('output');
+      const submit = document.getElementById('submit');
+
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const tx = document.getElementById('tx').value.trim();
+        const privKey = document.getElementById('privKey').value.trim();
+        if (!tx || !privKey) return;
+
+        submit.disabled = true;
+        submit.textContent = 'Redimiendo…';
+        output.hidden = false;
+        output.textContent = '';
+
+        try {
+          const response = await fetch('/api/redeem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tx, privKey }),
+          });
+          if (!response.ok || !response.body) {
+            output.textContent = `error ${response.status}: ${await response.text()}`;
+            return;
+          }
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            output.textContent += decoder.decode(value, { stream: true });
+            output.scrollTop = output.scrollHeight;
+          }
+        } catch (error) {
+          output.textContent += `\nerror de red: ${error.message}`;
+        } finally {
+          submit.disabled = false;
+          submit.textContent = 'Redimir';
+        }
+      });
+    </script>
+
+    <style>
+      :root {
+        color-scheme: light dark;
+        --accent: #7c5cff;
+        --border: light-dark(#d5d2e0, #3a3750);
+        --muted: light-dark(#6b6880, #9a97ad);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: start center;
+        font: 16px/1.5 system-ui, sans-serif;
+        background: light-dark(#f6f5fa, #17161f);
+        color: light-dark(#221f33, #eceaf5);
+        padding: 3rem 1rem;
+      }
+      main { width: min(44rem, 100%); }
+      h1 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+      .hint { color: var(--muted); margin: 0 0 1.5rem; font-size: 0.9rem; }
+      code {
+        font-family: ui-monospace, monospace;
+        background: light-dark(#e9e7f2, #24222f);
+        padding: 0 0.3em;
+        border-radius: 4px;
+      }
+      form { display: grid; gap: 1rem; }
+      label { display: grid; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; }
+      input {
+        font: inherit;
+        font-family: ui-monospace, monospace;
+        font-size: 0.9rem;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: light-dark(#ffffff, #1f1d2b);
+        color: inherit;
+      }
+      input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+      button {
+        justify-self: start;
+        font: inherit;
+        font-weight: 600;
+        padding: 0.6rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) { filter: brightness(1.1); }
+      button:disabled { opacity: 0.6; cursor: wait; }
+      #output {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: light-dark(#ffffff, #1f1d2b);
+        font: 0.8rem/1.6 ui-monospace, monospace;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 50dvh;
+        overflow-y: auto;
+      }
+    </style>
+  </body>
+</html>

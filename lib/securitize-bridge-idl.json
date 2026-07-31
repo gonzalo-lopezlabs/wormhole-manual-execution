@@ -1,0 +1,5204 @@
+{
+    "address": "8Ki16KJ5WqV3D749GaxYPzLNzuewCeAKVTpq6xPJjp5B",
+    "metadata": {
+        "name": "securitize_bridge",
+        "version": "0.1.0",
+        "spec": "0.1.0",
+        "description": "Securitize Solana Bridge"
+    },
+    "instructions": [
+        {
+            "name": "accept_ownership",
+            "discriminator": [
+                172,
+                23,
+                43,
+                13,
+                238,
+                213,
+                85,
+                150
+            ],
+            "accounts": [
+                {
+                    "name": "new_owner",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "bridge_ds_tokens",
+            "discriminator": [
+                116,
+                134,
+                0,
+                163,
+                102,
+                66,
+                182,
+                248
+            ],
+            "accounts": [
+                {
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "config",
+                    "docs": [
+                        "Bridge config for this asset mint. PDA validated by seeds constraint.",
+                        "`TokenConfig::Ds` variant guard + `authorized_user_role` match enforced in handler."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "asset_mint",
+                    "docs": [
+                        "Asset mint for the bridge (must match `config.asset_mint` via `has_one`)."
+                    ],
+                    "writable": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "token_program",
+                    "docs": [
+                        "Token program for the bridge asset. Used in revoke_tokens CPI."
+                    ]
+                },
+                {
+                    "name": "sender_token_account",
+                    "docs": [
+                        "Sender's token account (bridge asset). Used in revoke_tokens CPI."
+                    ],
+                    "writable": true
+                },
+                {
+                    "name": "bridge_address",
+                    "docs": [
+                        "Validates that target_chain is registered (`BridgeAddress` PDA exists). PDA validated by seeds constraint."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "target_chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "investor",
+                    "docs": [
+                        "IMR `Investor` account for the sender."
+                    ]
+                },
+                {
+                    "name": "wormhole_program",
+                    "docs": [
+                        "Wormhole program. Validated by address."
+                    ],
+                    "address": "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth"
+                },
+                {
+                    "name": "wormhole_bridge",
+                    "docs": [
+                        "Wormhole bridge data. Validated by address constraint (config.wormhole.bridge)."
+                    ],
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_fee_collector",
+                    "docs": [
+                        "Wormhole fee collector. Validated by address constraint (config.wormhole.fee_collector)."
+                    ],
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_emitter",
+                    "docs": [
+                        "Wormhole emitter PDA for this mint. Validated by seeds constraint."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "wormhole_sequence",
+                    "docs": [
+                        "Wormhole sequence tracker. Created by Wormhole on first post_message."
+                    ],
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_message",
+                    "writable": true
+                },
+                {
+                    "name": "controller_authority",
+                    "writable": true
+                },
+                {
+                    "name": "asset_access_controller",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "const",
+                                "value": [
+                                    65,
+                                    115,
+                                    115,
+                                    101,
+                                    116,
+                                    65,
+                                    99,
+                                    99,
+                                    101,
+                                    115,
+                                    115,
+                                    67,
+                                    111,
+                                    110,
+                                    116,
+                                    114,
+                                    111,
+                                    108,
+                                    108,
+                                    101,
+                                    114
+                                ]
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                39,
+                                187,
+                                109,
+                                213,
+                                40,
+                                51,
+                                125,
+                                25,
+                                188,
+                                33,
+                                103,
+                                70,
+                                58,
+                                111,
+                                111,
+                                187,
+                                71,
+                                143,
+                                97,
+                                162,
+                                179,
+                                254,
+                                110,
+                                126,
+                                91,
+                                60,
+                                35,
+                                134,
+                                192,
+                                7,
+                                101,
+                                220
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "authorized_user_role",
+                    "docs": [
+                        "(`TokenConfig::Ds` variant). Enforced in the handler."
+                    ]
+                },
+                {
+                    "name": "asset_controller"
+                },
+                {
+                    "name": "identity_registry"
+                },
+                {
+                    "name": "identity_account"
+                },
+                {
+                    "name": "tracker_account",
+                    "writable": true
+                },
+                {
+                    "name": "policy_engine",
+                    "writable": true
+                },
+                {
+                    "name": "wallet_identity_account"
+                },
+                {
+                    "name": "associated_token_program",
+                    "docs": [
+                        "Associated token program for the bridge asset."
+                    ],
+                    "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                    "name": "rbac_event_authority"
+                },
+                {
+                    "name": "executor_program"
+                },
+                {
+                    "name": "executor_payee",
+                    "writable": true
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                },
+                {
+                    "name": "clock",
+                    "address": "SysvarC1ock11111111111111111111111111111111"
+                },
+                {
+                    "name": "rent",
+                    "address": "SysvarRent111111111111111111111111111111111"
+                },
+                {
+                    "name": "event_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    95,
+                                    95,
+                                    101,
+                                    118,
+                                    101,
+                                    110,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "program"
+                }
+            ],
+            "args": [
+                {
+                    "name": "target_chain",
+                    "type": "u16"
+                },
+                {
+                    "name": "amount",
+                    "type": "u64"
+                },
+                {
+                    "name": "recipient",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "exec_amount",
+                    "type": "u64"
+                },
+                {
+                    "name": "signed_quote_bytes",
+                    "type": "bytes"
+                },
+                {
+                    "name": "wormhole_message_bump",
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "bridge_spl_tokens",
+            "discriminator": [
+                60,
+                114,
+                94,
+                150,
+                235,
+                57,
+                183,
+                51
+            ],
+            "accounts": [
+                {
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "config",
+                    "docs": [
+                        "Bridge config for this asset mint. PDA validated by seeds constraint."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "asset_mint",
+                    "docs": [
+                        "Asset mint for the bridge. Mutable because Token-2022 `burn_checked` decrements supply."
+                    ],
+                    "writable": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "token_program",
+                    "docs": [
+                        "Token program for the bridge asset. Burn flows through Token-2022 directly (Q1)."
+                    ]
+                },
+                {
+                    "name": "sender_token_account",
+                    "docs": [
+                        "Sender's token account."
+                    ],
+                    "writable": true
+                },
+                {
+                    "name": "bridge_address",
+                    "docs": [
+                        "Validates that target_chain is registered (`BridgeAddress` PDA exists)."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "target_chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "investor_registry",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    105,
+                                    110,
+                                    118,
+                                    101,
+                                    115,
+                                    116,
+                                    111,
+                                    114,
+                                    95,
+                                    114,
+                                    101,
+                                    103,
+                                    105,
+                                    115,
+                                    116,
+                                    114,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "payer"
+                            }
+                        ],
+                        "program": {
+                            "kind": "account",
+                            "path": "config.token_config",
+                            "account": "BridgeConfig"
+                        }
+                    }
+                },
+                {
+                    "name": "wormhole_program",
+                    "address": "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth"
+                },
+                {
+                    "name": "wormhole_bridge",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_fee_collector",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_emitter",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "wormhole_sequence",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_message",
+                    "writable": true
+                },
+                {
+                    "name": "executor_program"
+                },
+                {
+                    "name": "executor_payee",
+                    "writable": true
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                },
+                {
+                    "name": "clock",
+                    "address": "SysvarC1ock11111111111111111111111111111111"
+                },
+                {
+                    "name": "rent",
+                    "address": "SysvarRent111111111111111111111111111111111"
+                },
+                {
+                    "name": "event_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    95,
+                                    95,
+                                    101,
+                                    118,
+                                    101,
+                                    110,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "program"
+                }
+            ],
+            "args": [
+                {
+                    "name": "target_chain",
+                    "type": "u16"
+                },
+                {
+                    "name": "amount",
+                    "type": "u64"
+                },
+                {
+                    "name": "recipient",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "exec_amount",
+                    "type": "u64"
+                },
+                {
+                    "name": "signed_quote_bytes",
+                    "type": "bytes"
+                },
+                {
+                    "name": "wormhole_message_bump",
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "cancel_ownership_transfer",
+            "discriminator": [
+                2,
+                184,
+                195,
+                105,
+                138,
+                142,
+                154,
+                75
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "execute_vaa_v1",
+            "discriminator": [
+                195,
+                77,
+                54,
+                118,
+                36,
+                151,
+                194,
+                202
+            ],
+            "accounts": [
+                {
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "config",
+                    "docs": [
+                        "Bridge config account. Validated by seeds constraint.",
+                        "Operational guards (`TokenConfig::Ds` variant, `authorized_user_role` match,`!paused`)",
+                        "are enforced in handler to keep the `try_accounts` stack frame under",
+                        "the BPF 4096-byte limit."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_authority",
+                    "docs": [
+                        "Bridge authority PDA, signer for RBAC issue_tokens CPI."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "emitter_address",
+                    "docs": [
+                        "Expected VAA emitter for `emitter_chain` (mirrors EVM `emitterAddresses`)."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "emitter_chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "consumed_vaa",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    115,
+                                    117,
+                                    109,
+                                    101,
+                                    100
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "vaa_hash"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "received",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    114,
+                                    101,
+                                    99,
+                                    101,
+                                    105,
+                                    118,
+                                    101,
+                                    100
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "emitter_chain"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "sequence"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "posted",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    80,
+                                    111,
+                                    115,
+                                    116,
+                                    101,
+                                    100,
+                                    86,
+                                    65,
+                                    65
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "vaa_hash"
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                14,
+                                10,
+                                88,
+                                154,
+                                65,
+                                165,
+                                95,
+                                189,
+                                102,
+                                197,
+                                42,
+                                71,
+                                95,
+                                45,
+                                146,
+                                166,
+                                211,
+                                220,
+                                155,
+                                71,
+                                71,
+                                17,
+                                76,
+                                185,
+                                175,
+                                130,
+                                90,
+                                152,
+                                181,
+                                69,
+                                211,
+                                206
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "controller_authority",
+                    "writable": true
+                },
+                {
+                    "name": "asset_access_controller",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "const",
+                                "value": [
+                                    65,
+                                    115,
+                                    115,
+                                    101,
+                                    116,
+                                    65,
+                                    99,
+                                    99,
+                                    101,
+                                    115,
+                                    115,
+                                    67,
+                                    111,
+                                    110,
+                                    116,
+                                    114,
+                                    111,
+                                    108,
+                                    108,
+                                    101,
+                                    114
+                                ]
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                39,
+                                187,
+                                109,
+                                213,
+                                40,
+                                51,
+                                125,
+                                25,
+                                188,
+                                33,
+                                103,
+                                70,
+                                58,
+                                111,
+                                111,
+                                187,
+                                71,
+                                143,
+                                97,
+                                162,
+                                179,
+                                254,
+                                110,
+                                126,
+                                91,
+                                60,
+                                35,
+                                134,
+                                192,
+                                7,
+                                101,
+                                220
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "authorized_user_role",
+                    "docs": [
+                        "(`TokenConfig::Ds` variant). Enforced in the handler."
+                    ]
+                },
+                {
+                    "name": "asset_mint",
+                    "writable": true,
+                    "relations": [
+                        "config",
+                        "identity_registry"
+                    ]
+                },
+                {
+                    "name": "asset_controller"
+                },
+                {
+                    "name": "recipient_wallet",
+                    "docs": [
+                        "Recipient wallet (destination from VAA payload)."
+                    ]
+                },
+                {
+                    "name": "token_program"
+                },
+                {
+                    "name": "recipient_token_account",
+                    "docs": [
+                        "Recipient ATA for the bridge asset."
+                    ],
+                    "writable": true
+                },
+                {
+                    "name": "identity_registry",
+                    "docs": [
+                        "Identity registry for the bridge asset mint (Identity Registry program)."
+                    ],
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                231,
+                                75,
+                                81,
+                                14,
+                                232,
+                                84,
+                                45,
+                                52,
+                                3,
+                                211,
+                                48,
+                                13,
+                                45,
+                                218,
+                                249,
+                                1,
+                                6,
+                                163,
+                                235,
+                                112,
+                                36,
+                                214,
+                                213,
+                                157,
+                                141,
+                                10,
+                                56,
+                                4,
+                                197,
+                                233,
+                                153,
+                                177
+                            ]
+                        }
+                    },
+                    "relations": [
+                        "identity_account"
+                    ]
+                },
+                {
+                    "name": "investor",
+                    "docs": [
+                        "IMR `Investor` for `payload.investor_id`. `investor_id` vs VAA is checked in handler after decode."
+                    ]
+                },
+                {
+                    "name": "identity_account",
+                    "docs": [
+                        "Recipient identity account (PDA under identity registry)."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "account",
+                                "path": "identity_registry"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "identity_account.owner",
+                                "account": "IdentityAccount"
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                231,
+                                75,
+                                81,
+                                14,
+                                232,
+                                84,
+                                45,
+                                52,
+                                3,
+                                211,
+                                48,
+                                13,
+                                45,
+                                218,
+                                249,
+                                1,
+                                6,
+                                163,
+                                235,
+                                112,
+                                36,
+                                214,
+                                213,
+                                157,
+                                141,
+                                10,
+                                56,
+                                4,
+                                197,
+                                233,
+                                153,
+                                177
+                            ]
+                        }
+                    },
+                    "relations": [
+                        "wallet_identity_account"
+                    ]
+                },
+                {
+                    "name": "tracker_account",
+                    "writable": true
+                },
+                {
+                    "name": "policy_engine",
+                    "writable": true
+                },
+                {
+                    "name": "wallet_identity_account",
+                    "docs": [
+                        "Wallet-to-identity link for the recipient (PDA seeds: recipient wallet + asset mint)."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "account",
+                                "path": "recipient_wallet"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                231,
+                                75,
+                                81,
+                                14,
+                                232,
+                                84,
+                                45,
+                                52,
+                                3,
+                                211,
+                                48,
+                                13,
+                                45,
+                                218,
+                                249,
+                                1,
+                                6,
+                                163,
+                                235,
+                                112,
+                                36,
+                                214,
+                                213,
+                                157,
+                                141,
+                                10,
+                                56,
+                                4,
+                                197,
+                                233,
+                                153,
+                                177
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                },
+                {
+                    "name": "event_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    95,
+                                    95,
+                                    101,
+                                    118,
+                                    101,
+                                    110,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "program"
+                }
+            ],
+            "args": [
+                {
+                    "name": "vaa_hash",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "emitter_chain",
+                    "type": "u16"
+                },
+                {
+                    "name": "sequence",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "execute_vaa_v1_spl",
+            "discriminator": [
+                124,
+                12,
+                250,
+                51,
+                218,
+                49,
+                24,
+                13
+            ],
+            "accounts": [
+                {
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "config",
+                    "docs": [
+                        "Bridge config account."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_authority",
+                    "docs": [
+                        "Bridge authority PDA, signer for ACL `mint_to_checked` CPI."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "emitter_address",
+                    "docs": [
+                        "Expected VAA emitter for `emitter_chain`."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "emitter_chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "consumed_vaa",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    115,
+                                    117,
+                                    109,
+                                    101,
+                                    100
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "vaa_hash"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "received",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    114,
+                                    101,
+                                    99,
+                                    101,
+                                    105,
+                                    118,
+                                    101,
+                                    100
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "emitter_chain"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "sequence"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "posted",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    80,
+                                    111,
+                                    115,
+                                    116,
+                                    101,
+                                    100,
+                                    86,
+                                    65,
+                                    65
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "vaa_hash"
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                14,
+                                10,
+                                88,
+                                154,
+                                65,
+                                165,
+                                95,
+                                189,
+                                102,
+                                197,
+                                42,
+                                71,
+                                95,
+                                45,
+                                146,
+                                166,
+                                211,
+                                220,
+                                155,
+                                71,
+                                71,
+                                17,
+                                76,
+                                185,
+                                175,
+                                130,
+                                90,
+                                152,
+                                181,
+                                69,
+                                211,
+                                206
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "asset_mint",
+                    "docs": [
+                        "Asset mint. Mutable because ACL `mint_to_checked` increments supply."
+                    ],
+                    "writable": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "recipient_wallet",
+                    "docs": [
+                        "Recipient wallet from the VAA payload."
+                    ]
+                },
+                {
+                    "name": "investor_registry",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    105,
+                                    110,
+                                    118,
+                                    101,
+                                    115,
+                                    116,
+                                    111,
+                                    114,
+                                    95,
+                                    114,
+                                    101,
+                                    103,
+                                    105,
+                                    115,
+                                    116,
+                                    114,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "recipient_wallet"
+                            }
+                        ],
+                        "program": {
+                            "kind": "account",
+                            "path": "config.token_config",
+                            "account": "BridgeConfig"
+                        }
+                    }
+                },
+                {
+                    "name": "recipient_token_account",
+                    "docs": [
+                        "Recipient ATA."
+                    ],
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "account",
+                                "path": "recipient_wallet"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "token_program"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                140,
+                                151,
+                                37,
+                                143,
+                                78,
+                                36,
+                                137,
+                                241,
+                                187,
+                                61,
+                                16,
+                                41,
+                                20,
+                                142,
+                                13,
+                                131,
+                                11,
+                                90,
+                                19,
+                                153,
+                                218,
+                                255,
+                                16,
+                                132,
+                                4,
+                                142,
+                                123,
+                                216,
+                                219,
+                                233,
+                                248,
+                                89
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "token_program"
+                },
+                {
+                    "name": "associated_token_program",
+                    "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                },
+                {
+                    "name": "acl_program",
+                    "docs": [
+                        "(`TokenConfig::Spl` variant). Enforced in the handler."
+                    ]
+                },
+                {
+                    "name": "access_control_authority",
+                    "docs": [
+                        "ACL validates seeds and `mint == asset_mint` at CPI time."
+                    ]
+                },
+                {
+                    "name": "access_control_state"
+                },
+                {
+                    "name": "acl_event_authority"
+                },
+                {
+                    "name": "event_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    95,
+                                    95,
+                                    101,
+                                    118,
+                                    101,
+                                    110,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "program"
+                }
+            ],
+            "args": [
+                {
+                    "name": "vaa_hash",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "emitter_chain",
+                    "type": "u16"
+                },
+                {
+                    "name": "sequence",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "init_resolver_result_account",
+            "discriminator": [
+                117,
+                113,
+                11,
+                88,
+                61,
+                215,
+                14,
+                102
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "asset_mint",
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "result",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    120,
+                                    101,
+                                    99,
+                                    117,
+                                    116,
+                                    111,
+                                    114,
+                                    45,
+                                    97,
+                                    99,
+                                    99,
+                                    111,
+                                    117,
+                                    110,
+                                    116,
+                                    45,
+                                    114,
+                                    101,
+                                    115,
+                                    111,
+                                    108,
+                                    118,
+                                    101,
+                                    114,
+                                    58,
+                                    114,
+                                    101,
+                                    115,
+                                    117,
+                                    108,
+                                    116
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "initialize",
+            "discriminator": [
+                175,
+                175,
+                109,
+                31,
+                13,
+                152,
+                155,
+                237
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "program_data",
+                    "docs": [
+                        "ProgramData PDA of this program under BPF Loader Upgradeable.",
+                        "Gates initialization to the program upgrade authority to prevent a front-runner",
+                        "from permanently hijacking the BridgeConfig PDA for a given mint."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    108,
+                                    204,
+                                    159,
+                                    169,
+                                    163,
+                                    102,
+                                    179,
+                                    118,
+                                    168,
+                                    206,
+                                    195,
+                                    183,
+                                    91,
+                                    99,
+                                    10,
+                                    39,
+                                    97,
+                                    214,
+                                    159,
+                                    55,
+                                    164,
+                                    106,
+                                    141,
+                                    32,
+                                    27,
+                                    49,
+                                    58,
+                                    157,
+                                    234,
+                                    159,
+                                    57,
+                                    46
+                                ]
+                            }
+                        ],
+                        "program": {
+                            "kind": "const",
+                            "value": [
+                                2,
+                                168,
+                                246,
+                                145,
+                                78,
+                                136,
+                                161,
+                                176,
+                                226,
+                                16,
+                                21,
+                                62,
+                                247,
+                                99,
+                                174,
+                                43,
+                                0,
+                                194,
+                                185,
+                                61,
+                                22,
+                                193,
+                                36,
+                                210,
+                                192,
+                                83,
+                                122,
+                                16,
+                                4,
+                                128,
+                                0,
+                                0
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "asset_mint",
+                    "docs": [
+                        "Bridged asset mint. Token type (DS or SPL) is auto-detected from `mint_authority`."
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_authority",
+                    "docs": [
+                        "Bridge authority PDA. Cached bump is persisted to `config.bridge_authority_bump`",
+                        "for downstream instructions."
+                    ],
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "mint_authority",
+                    "docs": [
+                        "SPL — ACL PDA (validated at first ACL CPI)."
+                    ]
+                },
+                {
+                    "name": "asset_token_program"
+                },
+                {
+                    "name": "wormhole_program",
+                    "address": "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth"
+                },
+                {
+                    "name": "wormhole_bridge",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_fee_collector",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_emitter",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "asset_mint"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "wormhole_sequence",
+                    "writable": true
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "token_config",
+                    "type": {
+                        "defined": {
+                            "name": "TokenConfig"
+                        }
+                    }
+                },
+                {
+                    "name": "executor_program_id",
+                    "type": "pubkey"
+                },
+                {
+                    "name": "executor_gas_limit",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "propose_owner",
+            "discriminator": [
+                90,
+                57,
+                141,
+                110,
+                196,
+                241,
+                172,
+                39
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "new_owner",
+                    "type": "pubkey"
+                }
+            ]
+        },
+        {
+            "name": "remove_bridge_address",
+            "discriminator": [
+                85,
+                129,
+                37,
+                160,
+                232,
+                245,
+                147,
+                186
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_address",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "chain"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "chain",
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "remove_emitter_address",
+            "discriminator": [
+                125,
+                117,
+                59,
+                119,
+                148,
+                23,
+                194,
+                120
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "emitter_address",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "resolver_config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    114,
+                                    101,
+                                    115,
+                                    111,
+                                    108,
+                                    118,
+                                    101,
+                                    114
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "emitter_address.chain",
+                                "account": "EmitterAddress"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "emitter_address.address",
+                                "account": "EmitterAddress"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "chain",
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "set_bridge_address",
+            "discriminator": [
+                224,
+                65,
+                186,
+                215,
+                186,
+                162,
+                91,
+                13
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "bridge_address",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    98,
+                                    114,
+                                    105,
+                                    100,
+                                    103,
+                                    101,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "chain",
+                    "type": "u16"
+                },
+                {
+                    "name": "address",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "set_emitter_address",
+            "discriminator": [
+                173,
+                179,
+                164,
+                64,
+                239,
+                76,
+                187,
+                155
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "emitter_address",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114,
+                                    95,
+                                    97,
+                                    100,
+                                    100,
+                                    114,
+                                    101,
+                                    115,
+                                    115
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "chain"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "resolver_config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    114,
+                                    101,
+                                    115,
+                                    111,
+                                    108,
+                                    118,
+                                    101,
+                                    114
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "chain"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "address"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "old_resolver_config",
+                    "docs": [
+                        "`emitter_address` state, and `asset_mint` match are validated in the",
+                        "handler before the account is closed."
+                    ],
+                    "writable": true,
+                    "optional": true
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "chain",
+                    "type": "u16"
+                },
+                {
+                    "name": "address",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "min_consistency_level",
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "set_paused",
+            "discriminator": [
+                91,
+                60,
+                125,
+                192,
+                176,
+                225,
+                166,
+                218
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "paused",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "update_acl_program_id",
+            "discriminator": [
+                172,
+                131,
+                246,
+                1,
+                203,
+                125,
+                149,
+                58
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "new_acl_program_id",
+                    "type": "pubkey"
+                }
+            ]
+        },
+        {
+            "name": "update_authorized_user_role",
+            "discriminator": [
+                164,
+                124,
+                61,
+                26,
+                230,
+                202,
+                93,
+                121
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "authorized_user_role",
+                    "type": "pubkey"
+                }
+            ]
+        },
+        {
+            "name": "update_executor_program_id",
+            "discriminator": [
+                233,
+                199,
+                138,
+                203,
+                142,
+                62,
+                36,
+                148
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "executor_program_id",
+                    "type": "pubkey"
+                }
+            ]
+        },
+        {
+            "name": "update_finality",
+            "discriminator": [
+                255,
+                148,
+                191,
+                89,
+                114,
+                141,
+                186,
+                177
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "finality",
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "update_gas_limit",
+            "discriminator": [
+                195,
+                25,
+                177,
+                100,
+                247,
+                112,
+                7,
+                194
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "gas_limit",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "update_spl_token_registry_program_id",
+            "discriminator": [
+                21,
+                17,
+                237,
+                192,
+                46,
+                255,
+                241,
+                235
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "new_spl_token_registry_program_id",
+                    "type": "pubkey"
+                }
+            ]
+        },
+        {
+            "name": "update_wormhole_accounts",
+            "discriminator": [
+                205,
+                133,
+                130,
+                36,
+                81,
+                107,
+                80,
+                128
+            ],
+            "accounts": [
+                {
+                    "name": "owner",
+                    "writable": true,
+                    "signer": true,
+                    "relations": [
+                        "config"
+                    ]
+                },
+                {
+                    "name": "config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    110,
+                                    102,
+                                    105,
+                                    103
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "wormhole_program",
+                    "address": "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth"
+                },
+                {
+                    "name": "wormhole_bridge",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_fee_collector",
+                    "writable": true
+                },
+                {
+                    "name": "wormhole_emitter",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    101,
+                                    109,
+                                    105,
+                                    116,
+                                    116,
+                                    101,
+                                    114
+                                ]
+                            },
+                            {
+                                "kind": "account",
+                                "path": "config.asset_mint",
+                                "account": "BridgeConfig"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "wormhole_sequence",
+                    "writable": true
+                }
+            ],
+            "args": []
+        }
+    ],
+    "accounts": [
+        {
+            "name": "BridgeAddress",
+            "discriminator": [
+                172,
+                86,
+                85,
+                85,
+                138,
+                182,
+                144,
+                188
+            ]
+        },
+        {
+            "name": "BridgeConfig",
+            "discriminator": [
+                40,
+                206,
+                51,
+                233,
+                246,
+                40,
+                178,
+                85
+            ]
+        },
+        {
+            "name": "ConsumedVaa",
+            "discriminator": [
+                191,
+                28,
+                148,
+                127,
+                15,
+                13,
+                25,
+                110
+            ]
+        },
+        {
+            "name": "EmitterAddress",
+            "discriminator": [
+                5,
+                40,
+                183,
+                107,
+                237,
+                25,
+                170,
+                64
+            ]
+        },
+        {
+            "name": "ExecutorAccountResolverResult",
+            "discriminator": [
+                34,
+                185,
+                243,
+                199,
+                181,
+                255,
+                28,
+                227
+            ]
+        },
+        {
+            "name": "IdentityAccount",
+            "discriminator": [
+                194,
+                90,
+                181,
+                160,
+                182,
+                206,
+                116,
+                158
+            ]
+        },
+        {
+            "name": "IdentityRegistryAccount",
+            "discriminator": [
+                154,
+                254,
+                118,
+                4,
+                115,
+                36,
+                125,
+                78
+            ]
+        },
+        {
+            "name": "Investor",
+            "discriminator": [
+                174,
+                129,
+                17,
+                83,
+                36,
+                116,
+                26,
+                196
+            ]
+        },
+        {
+            "name": "Received",
+            "discriminator": [
+                227,
+                186,
+                72,
+                102,
+                0,
+                233,
+                222,
+                41
+            ]
+        },
+        {
+            "name": "ResolverConfig",
+            "discriminator": [
+                204,
+                63,
+                161,
+                214,
+                155,
+                61,
+                188,
+                176
+            ]
+        },
+        {
+            "name": "WalletIdentity",
+            "discriminator": [
+                101,
+                142,
+                55,
+                104,
+                168,
+                77,
+                57,
+                85
+            ]
+        },
+        {
+            "name": "WormholeEmitter",
+            "discriminator": [
+                34,
+                95,
+                161,
+                132,
+                226,
+                225,
+                31,
+                11
+            ]
+        }
+    ],
+    "events": [
+        {
+            "name": "ACLProgramIdUpdate",
+            "discriminator": [
+                142,
+                91,
+                90,
+                178,
+                209,
+                200,
+                8,
+                46
+            ]
+        },
+        {
+            "name": "AuthorizedUserRoleUpdate",
+            "discriminator": [
+                127,
+                113,
+                160,
+                100,
+                52,
+                181,
+                215,
+                46
+            ]
+        },
+        {
+            "name": "BridgeAddressAdded",
+            "discriminator": [
+                234,
+                52,
+                63,
+                34,
+                73,
+                246,
+                240,
+                152
+            ]
+        },
+        {
+            "name": "BridgeAddressRemoved",
+            "discriminator": [
+                249,
+                35,
+                76,
+                85,
+                191,
+                63,
+                140,
+                144
+            ]
+        },
+        {
+            "name": "DSTokenBridgeInitialized",
+            "discriminator": [
+                238,
+                226,
+                66,
+                104,
+                7,
+                58,
+                177,
+                119
+            ]
+        },
+        {
+            "name": "DSTokenBridgeReceive",
+            "discriminator": [
+                126,
+                175,
+                53,
+                219,
+                113,
+                0,
+                207,
+                243
+            ]
+        },
+        {
+            "name": "DSTokenBridgeSend",
+            "discriminator": [
+                201,
+                18,
+                49,
+                245,
+                136,
+                154,
+                123,
+                156
+            ]
+        },
+        {
+            "name": "EmitterAddressAdded",
+            "discriminator": [
+                247,
+                74,
+                13,
+                126,
+                239,
+                242,
+                225,
+                225
+            ]
+        },
+        {
+            "name": "EmitterAddressRemoved",
+            "discriminator": [
+                12,
+                44,
+                224,
+                136,
+                38,
+                226,
+                203,
+                68
+            ]
+        },
+        {
+            "name": "ExecutorProgramIdUpdate",
+            "discriminator": [
+                96,
+                58,
+                151,
+                22,
+                177,
+                102,
+                44,
+                30
+            ]
+        },
+        {
+            "name": "FinalityUpdate",
+            "discriminator": [
+                228,
+                175,
+                198,
+                169,
+                138,
+                14,
+                81,
+                109
+            ]
+        },
+        {
+            "name": "GasLimitUpdate",
+            "discriminator": [
+                151,
+                82,
+                201,
+                154,
+                70,
+                187,
+                45,
+                43
+            ]
+        },
+        {
+            "name": "OwnershipTransferCancelled",
+            "discriminator": [
+                120,
+                203,
+                162,
+                145,
+                180,
+                57,
+                253,
+                23
+            ]
+        },
+        {
+            "name": "OwnershipTransferProposed",
+            "discriminator": [
+                150,
+                120,
+                242,
+                14,
+                83,
+                116,
+                104,
+                71
+            ]
+        },
+        {
+            "name": "OwnershipTransferred",
+            "discriminator": [
+                172,
+                61,
+                205,
+                183,
+                250,
+                50,
+                38,
+                98
+            ]
+        },
+        {
+            "name": "PauseStatusChanged",
+            "discriminator": [
+                79,
+                144,
+                205,
+                195,
+                9,
+                152,
+                146,
+                91
+            ]
+        },
+        {
+            "name": "SPLTokenBridgeInitialized",
+            "discriminator": [
+                254,
+                0,
+                237,
+                192,
+                62,
+                243,
+                170,
+                144
+            ]
+        },
+        {
+            "name": "SPLTokenRegistryProgramIdUpdate",
+            "discriminator": [
+                119,
+                189,
+                160,
+                131,
+                34,
+                219,
+                222,
+                127
+            ]
+        },
+        {
+            "name": "WormholeAccountsUpdate",
+            "discriminator": [
+                138,
+                24,
+                219,
+                173,
+                111,
+                225,
+                6,
+                228
+            ]
+        }
+    ],
+    "errors": [
+        {
+            "code": 6000,
+            "name": "InvalidWormholeConfig",
+            "msg": "Invalid Wormhole bridge config"
+        },
+        {
+            "code": 6001,
+            "name": "InvalidWormholeFeeCollector",
+            "msg": "Invalid Wormhole fee collector account"
+        },
+        {
+            "code": 6002,
+            "name": "InvalidWormholeSequence",
+            "msg": "Invalid Wormhole sequence account"
+        },
+        {
+            "code": 6003,
+            "name": "OwnerOnly",
+            "msg": "The caller does not have the required permissions"
+        },
+        {
+            "code": 6004,
+            "name": "InvalidBridgeAddress",
+            "msg": "Invalid bridge address configuration for this chain"
+        },
+        {
+            "code": 6005,
+            "name": "WrongEmitterChain",
+            "msg": "Posted VAA emitter chain does not match instruction argument"
+        },
+        {
+            "code": 6006,
+            "name": "WrongSequence",
+            "msg": "Posted VAA sequence does not match instruction argument"
+        },
+        {
+            "code": 6007,
+            "name": "InvalidMessage",
+            "msg": "Invalid message"
+        },
+        {
+            "code": 6008,
+            "name": "CannotBridgeToSameChain",
+            "msg": "Cannot bridge to same chain"
+        },
+        {
+            "code": 6009,
+            "name": "BridgeAddressNotConfigured",
+            "msg": "Bridge address not configured for target chain"
+        },
+        {
+            "code": 6010,
+            "name": "InvalidPayload",
+            "msg": "Invalid payload"
+        },
+        {
+            "code": 6011,
+            "name": "RbacNotConfigured",
+            "msg": "RBAC is not configured"
+        },
+        {
+            "code": 6012,
+            "name": "InvalidBridgeAmount",
+            "msg": "Bridge amount must be greater than zero"
+        },
+        {
+            "code": 6013,
+            "name": "InsufficientTokenBalance",
+            "msg": "Insufficient token balance"
+        },
+        {
+            "code": 6014,
+            "name": "InsufficientTransferableBalance",
+            "msg": "Insufficient transferable balance"
+        },
+        {
+            "code": 6015,
+            "name": "BridgePaused",
+            "msg": "Bridge is paused"
+        },
+        {
+            "code": 6016,
+            "name": "WrongBridgeInitiator",
+            "msg": "VAA emitter does not match registered bridge for source chain"
+        },
+        {
+            "code": 6017,
+            "name": "IdentityAccountMismatch",
+            "msg": "Identity account does not match investor's linked identity"
+        },
+        {
+            "code": 6018,
+            "name": "InvalidAssetAccessController",
+            "msg": "Asset access controller in remaining accounts does not match PDA derived from bridge mint"
+        },
+        {
+            "code": 6019,
+            "name": "MintAuthorityNotAssetController",
+            "msg": "Mint authority account is not owned by Asset Controller program"
+        },
+        {
+            "code": 6020,
+            "name": "MintAuthorityInvalidData",
+            "msg": "Mint authority account data is too short or invalid"
+        },
+        {
+            "code": 6021,
+            "name": "MintAuthorityNotRbacController",
+            "msg": "Mint authority authority field does not match RBAC controller_authority PDA"
+        },
+        {
+            "code": 6022,
+            "name": "InvalidRecipient",
+            "msg": "Recipient address must not be zero"
+        },
+        {
+            "code": 6023,
+            "name": "RecipientMismatch",
+            "msg": "Recipient mismatch"
+        },
+        {
+            "code": 6024,
+            "name": "InvestorNotRegistered",
+            "msg": "Investor must be registered on destination chain before receiving bridge transfer"
+        },
+        {
+            "code": 6025,
+            "name": "InvestorIdMismatch",
+            "msg": "Investor account does not match investor_id from payload"
+        },
+        {
+            "code": 6026,
+            "name": "DestinationWalletNotWhitelisted",
+            "msg": "Destination wallet is not whitelisted for this investor"
+        },
+        {
+            "code": 6027,
+            "name": "InvalidInvestorAccount",
+            "msg": "Account is not a valid IMR investor account"
+        },
+        {
+            "code": 6028,
+            "name": "InvalidPolicyEngineAccount",
+            "msg": "Invalid PolicyEngine account data"
+        },
+        {
+            "code": 6029,
+            "name": "ExecutorNotConfigured",
+            "msg": "Executor is not configured"
+        },
+        {
+            "code": 6030,
+            "name": "InsufficientLamportsForFees",
+            "msg": "Insufficient lamports for Wormhole and executor fees"
+        },
+        {
+            "code": 6031,
+            "name": "InvalidFinality",
+            "msg": "Invalid finality (must be 0=Confirmed or 1=Finalized)"
+        },
+        {
+            "code": 6032,
+            "name": "BridgeAddressUnchanged",
+            "msg": "Bridge address for this chain is already set to the given value"
+        },
+        {
+            "code": 6033,
+            "name": "ZeroBridgeAddress",
+            "msg": "Bridge address must not be zero"
+        },
+        {
+            "code": 6034,
+            "name": "InvalidEmitterAddress",
+            "msg": "Invalid emitter address configuration for this chain"
+        },
+        {
+            "code": 6035,
+            "name": "EmitterAddressNotConfigured",
+            "msg": "Emitter address not configured for source chain"
+        },
+        {
+            "code": 6036,
+            "name": "EmitterAddressUnchanged",
+            "msg": "Emitter address for this chain is already set to the given value"
+        },
+        {
+            "code": 6037,
+            "name": "ZeroEmitterAddress",
+            "msg": "Emitter address must not be zero"
+        },
+        {
+            "code": 6038,
+            "name": "FinalityUnchanged",
+            "msg": "Finality is already set to the given value"
+        },
+        {
+            "code": 6039,
+            "name": "GasLimitUnchanged",
+            "msg": "Executor gas limit is already set to the given value"
+        },
+        {
+            "code": 6040,
+            "name": "InvalidGasLimit",
+            "msg": "Executor gas limit must be greater than zero"
+        },
+        {
+            "code": 6041,
+            "name": "AssetMintMismatch",
+            "msg": "Asset mint account does not match bridge config"
+        },
+        {
+            "code": 6042,
+            "name": "ZeroAssetMint",
+            "msg": "Bridge config asset mint must not be default"
+        },
+        {
+            "code": 6043,
+            "name": "AlreadyPaused",
+            "msg": "Bridge is already paused"
+        },
+        {
+            "code": 6044,
+            "name": "AlreadyUnpaused",
+            "msg": "Bridge is already unpaused"
+        },
+        {
+            "code": 6045,
+            "name": "AuthorizedUserRoleUnchanged",
+            "msg": "Authorized user role is already set to the given value"
+        },
+        {
+            "code": 6046,
+            "name": "WormholeAccountsUnchanged",
+            "msg": "Wormhole bridge, fee collector, and sequence are already set to the given accounts"
+        },
+        {
+            "code": 6047,
+            "name": "ZeroExecutorProgramId",
+            "msg": "Executor program id must not be zero"
+        },
+        {
+            "code": 6048,
+            "name": "ExecutorProgramIdUnchanged",
+            "msg": "Executor program id is already set to the given value"
+        },
+        {
+            "code": 6049,
+            "name": "InvalidExecutorProgram",
+            "msg": "Executor program account must match bridge config executor_program_id"
+        },
+        {
+            "code": 6050,
+            "name": "ResolverResultWrongAccountOwner",
+            "msg": "Executor resolver result account must be owned by this program"
+        },
+        {
+            "code": 6051,
+            "name": "ResolverResultTooLarge",
+            "msg": "Serialized resolver result exceeds maximum account data size"
+        },
+        {
+            "code": 6052,
+            "name": "ResolverResultBufferUndersized",
+            "msg": "Resolver result buffer too small for serialized data (pre-extend or re-init)"
+        },
+        {
+            "code": 6053,
+            "name": "ResolverConfigMintMismatch",
+            "msg": "ResolverConfig already claimed by a different bridge instance"
+        },
+        {
+            "code": 6054,
+            "name": "InsufficientConsistencyLevel",
+            "msg": "Posted VAA consistency level is below the per-emitter minimum"
+        },
+        {
+            "code": 6055,
+            "name": "MissingOldResolverConfig",
+            "msg": "In-place emitter address rotation requires the superseded ResolverConfig PDA"
+        },
+        {
+            "code": 6056,
+            "name": "UnexpectedOldResolverConfig",
+            "msg": "Old ResolverConfig must not be provided on first emitter address registration"
+        },
+        {
+            "code": 6057,
+            "name": "InvalidOldResolverConfig",
+            "msg": "Supplied old ResolverConfig does not match pre-update emitter state"
+        },
+        {
+            "code": 6058,
+            "name": "InvestorIdTooLong",
+            "msg": "Investor ID exceeds the maximum allowed length"
+        },
+        {
+            "code": 6059,
+            "name": "CountryTooLong",
+            "msg": "Country string exceeds maximum encoded length"
+        },
+        {
+            "code": 6060,
+            "name": "InvalidAttributeCount",
+            "msg": "Bridge payload must contain exactly the required attribute count"
+        },
+        {
+            "code": 6061,
+            "name": "EncodedPayloadTooLong",
+            "msg": "Encoded bridge payload exceeds maximum length"
+        },
+        {
+            "code": 6062,
+            "name": "NotUpgradeAuthority",
+            "msg": "Initializer must be the program upgrade authority"
+        },
+        {
+            "code": 6063,
+            "name": "ZeroPendingOwner",
+            "msg": "Proposed owner must not be zero"
+        },
+        {
+            "code": 6064,
+            "name": "PendingOwnerSameAsOwner",
+            "msg": "Proposed owner must differ from the current owner"
+        },
+        {
+            "code": 6065,
+            "name": "PendingOwnerUnchanged",
+            "msg": "Proposed owner is already set to the given value"
+        },
+        {
+            "code": 6066,
+            "name": "NoPendingOwner",
+            "msg": "No pending ownership transfer to accept or cancel"
+        },
+        {
+            "code": 6067,
+            "name": "UnauthorizedPendingOwner",
+            "msg": "Signer does not match the pending owner"
+        },
+        {
+            "code": 6068,
+            "name": "WrongTokenType",
+            "msg": "Bridge instruction does not match the bridge config token type"
+        },
+        {
+            "code": 6069,
+            "name": "InvalidAclProgram",
+            "msg": "ACL program account does not match bridge config acl_program_id"
+        },
+        {
+            "code": 6070,
+            "name": "InitParamsMismatch",
+            "msg": "TokenConfig variant does not match the on-chain mint structure"
+        },
+        {
+            "code": 6071,
+            "name": "InvalidInvestorRegistry",
+            "msg": "InvestorRegistry account is missing, has wrong owner, or fails layout deserialization"
+        },
+        {
+            "code": 6072,
+            "name": "InvestorRegistryMintMismatch",
+            "msg": "InvestorRegistry.mint does not match the bridge asset_mint"
+        },
+        {
+            "code": 6073,
+            "name": "InvestorRegistryWalletMismatch",
+            "msg": "InvestorRegistry.wallet does not match the tx payer / recipient wallet"
+        },
+        {
+            "code": 6074,
+            "name": "InvestorRegistryInvestorIdMismatch",
+            "msg": "InvestorRegistry.investor_id does not match the VAA payload investor_id"
+        },
+        {
+            "code": 6075,
+            "name": "SplTokenRegistryProgramNotConfigured",
+            "msg": "spl_token_registry_program_id is not configured for this SPL bridge instance"
+        },
+        {
+            "code": 6076,
+            "name": "SplTokenRegistryProgramIdUnchanged",
+            "msg": "Proposed spl_token_registry_program_id is the same as the current value"
+        },
+        {
+            "code": 6077,
+            "name": "AclProgramIdUnchanged",
+            "msg": "Proposed acl_program_id is the same as the current value"
+        },
+        {
+            "code": 6078,
+            "name": "TrackerAccountMismatch",
+            "msg": "tracker_account is not bound to the expected asset_mint / identity_account"
+        },
+        {
+            "code": 6079,
+            "name": "InvestorIdEmpty",
+            "msg": "Investor ID must not be empty or whitespace-only"
+        },
+        {
+            "code": 6080,
+            "name": "InvalidEvmAddress",
+            "msg": "Recipient is not a well-formed EVM address (must be left-padded with 12 zero bytes)"
+        },
+        {
+            "code": 6081,
+            "name": "SplMintNotToken2022",
+            "msg": "SPL bridge requires a Token-2022 mint (asset_mint must be owned by the Token-2022 program)"
+        }
+    ],
+    "types": [
+        {
+            "name": "ACLProgramIdUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_acl_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_acl_program_id",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "AuthorizedUserRoleUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_authorized_user_role",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_authorized_user_role",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "BridgeAddress",
+            "docs": [
+                "Remote bridge destination for a target chain (mirrors EVM `bridgeAddresses`); used as executor relay target."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "chain",
+                        "docs": [
+                            "Wormhole chain id of the remote peer. Cannot equal `1` (Solana) except on devnet builds."
+                        ],
+                        "type": "u16"
+                    },
+                    {
+                        "name": "address",
+                        "docs": [
+                            "Remote bridge identity as 32 bytes (EVM contract or other encoding)."
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "bump",
+                        "docs": [
+                            "Bump for bridge_address PDA."
+                        ],
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "BridgeAddressAdded",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "chain_id",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "bridge_address",
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "BridgeAddressRemoved",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "chain_id",
+                        "type": "u16"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "BridgeConfig",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "pending_owner",
+                        "docs": [
+                            "Two-step ownership transfer candidate. Default (zero) = no transfer in flight."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole",
+                        "type": {
+                            "defined": {
+                                "name": "WormholeAddresses"
+                            }
+                        }
+                    },
+                    {
+                        "name": "batch_id",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "finality",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "docs": [
+                            "Asset mint that this bridge instance operates on. PDAs for `BridgeConfig` and",
+                            "related per-mint state derive from this pubkey."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "executor_program_id",
+                        "docs": [
+                            "Wormhole Executor program id. Default = no Executor."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "executor_gas_limit",
+                        "docs": [
+                            "Gas limit for execution on the destination chain (e.g. EVM). Passed in relay instructions",
+                            "when bridging. Matches EVM gasLimit."
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "paused",
+                        "docs": [
+                            "Emergency pause flag. When true, bridge_ds_tokens and execute_vaa_v1 are disabled."
+                        ],
+                        "type": "bool"
+                    },
+                    {
+                        "name": "bridge_authority_bump",
+                        "docs": [
+                            "Bump for bridge_authority PDA."
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "bump",
+                        "docs": [
+                            "Bump for this config PDA (`[SEED_PREFIX, asset_mint]`)."
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "token_config",
+                        "docs": [
+                            "Token-flow payload."
+                        ],
+                        "type": {
+                            "defined": {
+                                "name": "TokenConfig"
+                            }
+                        }
+                    },
+                    {
+                        "name": "_reserved",
+                        "docs": [
+                            "Reserved trailing buffer for future upgrades."
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                64
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ConsumedVaa",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "consumed",
+                        "type": "bool"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "DSTokenBridgeInitialized",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "authorized_user_role",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "executor_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "executor_gas_limit",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "wormhole_bridge",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole_fee_collector",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole_sequence",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole_emitter",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "finality",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "DSTokenBridgeReceive",
+            "docs": [
+                "Emitted by both the DS and SPL inbound flows."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "source_chain_id",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "source_wallet",
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "destination_address",
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "investor_id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "value",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "DSTokenBridgeSend",
+            "docs": [
+                "Emitted by both the DS and SPL outbound flows."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "target_chain_id",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "source_wallet",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "destination_address",
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "investor_id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "value",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "EmitterAddress",
+            "docs": [
+                "Expected Wormhole `vm.emitterAddress` for a source chain (mirrors EVM `emitterAddresses`)."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "chain",
+                        "docs": [
+                            "Wormhole chain id of the source. Cannot equal `1` (Solana) except on devnet builds."
+                        ],
+                        "type": "u16"
+                    },
+                    {
+                        "name": "address",
+                        "docs": [
+                            "32-byte emitter identity (EVM: padded bridge contract; Solana: emitter PDA)."
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "bump",
+                        "docs": [
+                            "Bump for emitter_address PDA."
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "min_consistency_level",
+                        "docs": [
+                            "Required value of the VAA `consistencyLevel` byte for inbound messages from this emitter."
+                        ],
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "EmitterAddressAdded",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "chain_id",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "emitter_address",
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "min_consistency_level",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "EmitterAddressRemoved",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "chain_id",
+                        "type": "u16"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ExecutorAccountResolverResult",
+            "docs": [
+                "Stores a large [`Resolver::Resolved`] payload when it does not fit in Solana return data (1024 bytes).",
+                "Discriminator matches Wormhole executor-account-resolver spec."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "defined": {
+                            "name": "Resolver",
+                            "generics": [
+                                {
+                                    "kind": "type",
+                                    "type": {
+                                        "defined": {
+                                            "name": "InstructionGroups"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ExecutorProgramIdUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_executor_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_executor_program_id",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "FinalityUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_finality",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "new_finality",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "GasLimitUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_gas_limit",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "new_gas_limit",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "IdentityAccount",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "version",
+                        "docs": [
+                            "version of the account"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "identity_registry",
+                        "docs": [
+                            "identity registry to which the account belongs"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "owner",
+                        "docs": [
+                            "owner of the identity account"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "num_wallets",
+                        "docs": [
+                            "number of wallets attached to this identity account"
+                        ],
+                        "type": "u16"
+                    },
+                    {
+                        "name": "country",
+                        "docs": [
+                            "country code of the user"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "levels",
+                        "type": {
+                            "vec": {
+                                "defined": {
+                                    "name": "IdentityLevel"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "IdentityLevel",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "level",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "expiry",
+                        "type": "i64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "IdentityRegistryAccount",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "version",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "docs": [
+                            "corresponding asset mint"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "authority",
+                        "docs": [
+                            "authority to manage the registry"
+                        ],
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "InstructionGroup",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "instructions",
+                        "type": {
+                            "vec": {
+                                "defined": {
+                                    "name": "SerializableInstruction"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "address_lookup_tables",
+                        "type": {
+                            "vec": "pubkey"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "InstructionGroups",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "vec": {
+                            "defined": {
+                                "name": "InstructionGroup"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Investor",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "authority",
+                        "docs": [
+                            "Authority keypair allowed to write this account, will match authority or delegate of IdentityRegistry",
+                            "at time of creation of IdentityAccount."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "identity_account",
+                        "docs": [
+                            "IdentityAccount associated with this investor."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "identity_registry",
+                        "docs": [
+                            "IdentityRegistryAccount associated with this investor."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "bump",
+                        "docs": [
+                            "PDA Seed Bump"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "investor_id",
+                        "docs": [
+                            "Unique ID for Investor, generated off-chain."
+                        ],
+                        "type": "string"
+                    },
+                    {
+                        "name": "collision_hash",
+                        "docs": [
+                            "Metadata for investor, generated off-chain."
+                        ],
+                        "type": "string"
+                    },
+                    {
+                        "name": "last_updated_by",
+                        "docs": [
+                            "User that last modified this investor. Read from payer of instruction."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "levels",
+                        "docs": [
+                            "Levels assigned to investor."
+                        ],
+                        "type": {
+                            "vec": {
+                                "defined": {
+                                    "name": "LevelData"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "LevelData",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "level",
+                        "docs": [
+                            "Maps to IdentityAccount level used in RWA Token."
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "proof_hash",
+                        "docs": [
+                            "Hash generated off-chain."
+                        ],
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "MissingAccounts",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "accounts",
+                        "type": {
+                            "vec": "pubkey"
+                        }
+                    },
+                    {
+                        "name": "address_lookup_tables",
+                        "type": {
+                            "vec": "pubkey"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "OwnershipTransferCancelled",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "current_owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "cancelled_pending_owner",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "OwnershipTransferProposed",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "current_owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "pending_owner",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "OwnershipTransferred",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "previous_owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_owner",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PauseStatusChanged",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "paused",
+                        "type": "bool"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Received",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "batch_id",
+                        "docs": [
+                            "nonce"
+                        ],
+                        "type": "u32"
+                    },
+                    {
+                        "name": "wormhole_message_hash",
+                        "docs": [
+                            "Keccak256 hash of verified Wormhole message."
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "payload",
+                        "type": "bytes"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Resolver",
+            "generics": [
+                {
+                    "kind": "type",
+                    "name": "T"
+                }
+            ],
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Resolved",
+                        "fields": [
+                            {
+                                "generic": "T"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Missing",
+                        "fields": [
+                            {
+                                "defined": {
+                                    "name": "MissingAccounts"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Account",
+                        "fields": []
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ResolverConfig",
+            "docs": [
+                "Resolver configuration for Wormhole Executor integration.",
+                "",
+                "Seeded by [emitter_chain, emitter_address] so the resolver can derive the",
+                "correct PDA from the VAA body without knowing the asset_mint upfront.",
+                "One ResolverConfig per foreign emitter registration."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "asset_mint",
+                        "docs": [
+                            "Asset mint managed by this bridge instance (same as `BridgeConfig.asset_mint`)."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "bump",
+                        "docs": [
+                            "PDA bump seed."
+                        ],
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "SPLTokenBridgeInitialized",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "asset_mint",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "acl_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "spl_token_registry_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "executor_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "executor_gas_limit",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "wormhole_bridge",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole_fee_collector",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole_sequence",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wormhole_emitter",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "finality",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "SPLTokenRegistryProgramIdUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_spl_token_registry_program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_spl_token_registry_program_id",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "SerializableAccountMeta",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "pubkey",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "is_signer",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "is_writable",
+                        "type": "bool"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "SerializableInstruction",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "program_id",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "accounts",
+                        "type": {
+                            "vec": {
+                                "defined": {
+                                    "name": "SerializableAccountMeta"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "type": "bytes"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "TokenConfig",
+            "docs": [
+                "Discriminated union describing the per-instance bridge configuration payload."
+            ],
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Ds",
+                        "fields": [
+                            {
+                                "name": "authorized_user_role",
+                                "type": "pubkey"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Spl",
+                        "fields": [
+                            {
+                                "name": "acl_program_id",
+                                "type": "pubkey"
+                            },
+                            {
+                                "name": "spl_token_registry_program_id",
+                                "type": "pubkey"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "WalletIdentity",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "identity_account",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "wallet",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "WormholeAccountsUpdate",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge_instance",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_wormhole_bridge",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_wormhole_fee_collector",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "old_wormhole_sequence",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_wormhole_bridge",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_wormhole_fee_collector",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "new_wormhole_sequence",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "WormholeAddresses",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bridge",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "fee_collector",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "sequence",
+                        "type": "pubkey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "WormholeEmitter",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        }
+    ]
+}
