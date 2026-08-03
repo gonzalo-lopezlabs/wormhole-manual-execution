@@ -11,13 +11,30 @@ export default defineConfig({
   server: { port: 4322 },
   vite: {
     ssr: {
-      // The bridge SDK is bundled from its CommonJS build, and its `require` of
-      // spl-token comes out the other side as a default import. spl-token has no
-      // default export, so the function refused to load until it was bundled
-      // too, letting rollup settle the interop at build time.
+      // The bridge SDK is bundled from its CommonJS build, so rollup rewrites
+      // each `require` it makes into a default import. That is fine for a
+      // CommonJS dependency, where the default is `module.exports`, and fatal
+      // for an ESM one, which has no default: the function then refuses to load
+      // with "does not provide an export named 'default'". These are the ESM
+      // packages reachable that way, so they are bundled too and rollup settles
+      // the interop at build time. `noExternal: true` would cover it in one
+      // line but breaks the build in rollup.
+      //
+      // The list was not guessed. Importing the built chunk with plain node
+      // reproduces the deployed failure exactly, so each name here came from
+      // building, importing, and reading the package it named:
+      //   node -e "import('./.vercel/output/functions/_render.func/dist/server/pages/api/redeem.astro.mjs')"
       noExternal: [
-        '@solana/spl-token',
+        '@noble/hashes',
         '@solana/buffer-layout-utils',
+        '@solana/codecs',
+        '@solana/codecs-core',
+        '@solana/codecs-data-structures',
+        '@solana/codecs-numbers',
+        '@solana/codecs-strings',
+        '@solana/errors',
+        '@solana/options',
+        '@solana/spl-token',
         '@solana/spl-token-group',
         '@solana/spl-token-metadata',
       ],
