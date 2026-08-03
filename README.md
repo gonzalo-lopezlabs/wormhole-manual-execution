@@ -14,7 +14,7 @@ holder is left short and there is no automatic retry: the request stays `aborted
 forever. Redeeming a VAA is permissionless, so anyone with a funded Solana keypair
 can finish the job, which is what this tool does.
 
-Observed failure on devnet (2026-07-30 and 2026-07-31, three requests):
+The failure looks like this:
 
 ```
 status       : aborted
@@ -23,9 +23,23 @@ failureCause : svm_simulation_failed
              Program 11111111111111111111111111111111 failed: custom program error: 0x1
 ```
 
-The failing instruction is a System transfer of nearly the Executor's whole
-balance, short by ~0.0012 SOL. It looks like a bug on their side, not something
-the bridge or the token can cause. It has not been reported yet.
+The cause is on our side, not Wormhole's: the EVM bridge's `msgValue` is zero, so
+the relay instructions carry nothing to fund the destination accounts and the
+Executor's own transfer comes up short. Read it with `msgValue()` on the bridge and
+compare against a pair that works; the fix is `updateMsgValue`, owner only, exposed
+as `npx hardhat update-msg-value --contract <bridge> --msg-value 20000000 --network
+sepolia` in `bc-securitize-bridge-sc`. It is a single contract-wide value, not
+per-chain, so a Solana-sized value only belongs on a bridge whose destination is
+Solana.
+
+A deployment leaves it at zero unless the optional `msgValue` argument was passed,
+which is why this keeps reappearing on newly deployed bridges. Evidence, both read
+on 2026-08-03: the SPL pair `0xe9fd4ed2...` had it set to 20000000 that morning and
+its inbound was delivered automatically; the DS pair `0x33964f6b...` was still at
+zero and its inbound aborted with the message above.
+
+Once a transfer has aborted, fixing the config does not rescue it. There is no
+retry, so it still has to be redeemed by hand.
 
 Check the Executor's own view of a request with:
 
@@ -58,6 +72,34 @@ base58 secret key, a JSON byte array, or a path to either. No environment variab
 The signer only pays fees: the tokens always go to the recipient named in the VAA.
 Nothing is sent until the transaction passes simulation, Solana through preflight and
 Sepolia through gas estimation, so a doomed redemption costs nothing.
+
+## Sending, to produce a transfer to redeem
+
+`send.js` starts a transfer out of Solana, the same request the redemption front
+end makes: `SecuritizeBridgeClient` from `@securitize/solana-bridge-sdk` builds
+the instructions and a `Transport` signs and sends them. The front end's
+transport hands the transaction to a browser wallet, this one signs with a
+keypair. Nothing else differs.
+
+```bash
+node send.js mint=<mint> amount=<tokens> recipient=0x<evm address> privKey=<solana key> \
+  [investorId=<id>] [lut=<lookup table>]
+```
+
+`amount` is in token units, converted with the mint's decimals. The target chain
+is Sepolia, implied by the EVM recipient. The sender pays the Wormhole fee plus
+the Executor quote (~0.014 SOL on devnet) and must hold the tokens and be in the
+token's investor registry, so it has to be the investor's own wallet, not any
+funded keypair. Redeeming has no such requirement.
+
+The DS / SPL branch is the front end's, copied on purpose: `BridgeConfig`'s
+`tokenConfig` is a discriminated union, so `'ds' in tokenConfig` picks
+`bridgeDsTokens` over `bridgeSplTokens`. DS needs `investorId`, which the front
+end takes from the session and is not derivable on chain; SPL ignores it. `lut`
+defaults to the devnet SPL table, so another token needs its own.
+
+Solana outbound only, which is all the SDK covers. A Sepolia outbound starts on
+the EVM bridge contract instead.
 
 ## What it works out on its own
 
