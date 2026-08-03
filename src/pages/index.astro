@@ -1,4 +1,9 @@
 ---
+// Vercel injects the commit at build time, so the badge always names the build
+// you are looking at without anyone remembering to bump it. Local runs have no
+// commit, so they say so.
+const commit = process.env.VERCEL_GIT_COMMIT_SHA;
+const version = commit ? commit.slice(0, 7) : 'dev';
 ---
 <!doctype html>
 <html lang="en">
@@ -9,7 +14,7 @@
   </head>
   <body>
     <main>
-      <h1>Redeem a stuck bridge transfer <span class="version">v4</span></h1>
+      <h1>Redeem a stuck bridge transfer <span class="version">{version}</span></h1>
       <p class="hint">
         A <code>0x…</code> hash left Sepolia and is redeemed on Solana; a Solana
         signature is redeemed on Sepolia. The payer key covers fees only: tokens go
