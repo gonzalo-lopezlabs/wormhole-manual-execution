@@ -24,8 +24,9 @@
         </label>
         <label>
           Fee payer key
-          <input id="payerKey" name="payerKey" type="password" required
-            placeholder="EVM hex, base58 secret, JSON array, or keypair path" />
+          <input id="payerKey" name="payerKey" type="text" required
+            placeholder="EVM hex, base58 secret, JSON array, or keypair path"
+            spellcheck="false" autocomplete="off" data-1p-ignore data-lpignore="true" />
         </label>
         <button id="submit" type="submit">Redeem</button>
       </form>
