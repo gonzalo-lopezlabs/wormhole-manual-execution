@@ -10,14 +10,10 @@
  * README.md for what actually happens.
  */
 
+import { parseArgs } from './lib/config.js';
 import { redeem, describeError } from './lib/redeem.js';
 
-const args = Object.fromEntries(
-  process.argv.slice(2).map(arg => {
-    const at = arg.indexOf('=');
-    return [arg.slice(0, at), arg.slice(at + 1)];
-  }),
-);
+const args = parseArgs(process.argv.slice(2));
 
 if (!args.tx || !args.privKey) {
   console.error('usage: node index.js tx=<hash> privKey=<key that pays the fees>');
